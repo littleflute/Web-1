@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<!--
+Create a basic HTML5 document and include the required Javascript tags.  Populate the document with five HTML elements:  four textbox fields and a Submit button.  
+
+Each textbox must accept inputs but must also display the following texts or highlights:
+
+Display "Response too short" when the user types in information less than 3 characters long.
+Display "Required field" and fill the text field with red color when the user clicks in the text field but does not enter any data.
+-->
+<head>
+	<title>Week06_Assignment</title>
+	<meta charset="UTF-8">
+	<style>
+		dfn{
+			color:brown;
+		}
+	</style>
+
+</head>
+<body>
+
+	<form>
+	<!-- Version 01
+		Name:<input type="text" id="tbxName" onclick="tbxClick('tbxName','displayName');" onkeyup="tbxKeyUp('tbxName','displayName');" onblur="tbxInputCheck('tbxName','displayName');" required>&nbsp<dfn id="displayName"></dfn><br><br>
+		Student ID:<input type="text" id="tbxSid" onclick="tbxClick('tbxSid','displaySid');" onkeyup="tbxKeyUp('tbxSid','displaySid');" onblur="tbxInputCheck('tbxSid','displaySid');" required>&nbsp<dfn id="displaySid"></dfn><br><br>
+		Instructor:<input type="text" id="tbxInstructor" onclick="tbxClick('tbxInstructor','displayInstructor');" onkeyup="tbxKeyUp('tbxInstructor','displayInstructor');" onblur="tbxInputCheck('tbxInstructor','displayInstructor');" required>&nbsp<dfn id="displayInstructor"></dfn><br><br>
+		Class Name:<input type="text" id="tbxClassName" onclick="tbxClick('tbxClassName','displayClassName');" onkeyup="tbxKeyUp('tbxClassName','displayClassName');" onblur="tbxInputCheck('tbxClassName','displayClassName');" required>&nbsp<dfn id="displayClassName"></dfn><br><br>
+	Version 01-->
+	
+	<!-- Version 02  -->
+		Name:<input type="text" class="tbx" id="tbxName" required>&nbsp<dfn id="displayName"></dfn><br><br>
+		Student ID:<input type="text" class="tbx" id="tbxSid" required>&nbsp<dfn id="displaySid"></dfn><br><br>
+		Instructor:<input type="text" class="tbx" id="tbxInstructor" required>&nbsp<dfn id="displayInstructor"></dfn><br><br>
+		Class Name:<input type="text" class="tbx" id="tbxClassName" required>&nbsp<dfn id="displayClassName"></dfn><br><br>
+	<!-- Version 02  -->	
+		
+		<input type="submit" value="submit" >
+	</form>
+</body>
+<script>
+/* Version 01
+	function tbxClick(tbxId,displayId){
+		//alert("Hi");
+		var numTextLength = document.getElementById(tbxId).value.length;
+		if (numTextLength < 1){
+			document.getElementById(tbxId).style.backgroundColor = "red";
+			document.getElementById(displayId).innerHTML = "Required field";
+		}	
+	}
+	function tbxKeyUp(tbxId,displayId){
+		var numTextLength = document.getElementById(tbxId).value.length;
+		//alert(numTextLength);
+		if (numTextLength >= 1){
+			document.getElementById(tbxId).style.backgroundColor = "white";
+			document.getElementById(displayId).innerHTML = "";
+		}
+	}
+	function tbxInputCheck(tbxId,displayId){
+		var numTextLength = document.getElementById(tbxId).value.length;
+		if (numTextLength < 3){
+			document.getElementById(displayId).innerHTML = "Response too short,at least 3 characters";			
+		}else
+		{
+			document.getElementById(displayId).innerHTML = "";	
+		}
+	}
+Version 01 */	
+
+/* Version 02 */
+	document.getElementsByClassName("tbx").addEventListener("click", function(e){
+		alert("Hello");
+	})
+	
+</script>
+</html>
