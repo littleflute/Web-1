@@ -17,60 +17,79 @@ Display "Required field" and fill the text field with red color when the user cl
 		}
 	</style>
 
+
 </head>
 <body>
 
 	<form>
-	<!-- Version 01
-		Name:<input type="text" id="tbxName" onclick="tbxClick('tbxName','displayName');" onkeyup="tbxKeyUp('tbxName','displayName');" onblur="tbxInputCheck('tbxName','displayName');" required>&nbsp<dfn id="displayName"></dfn><br><br>
-		Student ID:<input type="text" id="tbxSid" onclick="tbxClick('tbxSid','displaySid');" onkeyup="tbxKeyUp('tbxSid','displaySid');" onblur="tbxInputCheck('tbxSid','displaySid');" required>&nbsp<dfn id="displaySid"></dfn><br><br>
-		Instructor:<input type="text" id="tbxInstructor" onclick="tbxClick('tbxInstructor','displayInstructor');" onkeyup="tbxKeyUp('tbxInstructor','displayInstructor');" onblur="tbxInputCheck('tbxInstructor','displayInstructor');" required>&nbsp<dfn id="displayInstructor"></dfn><br><br>
-		Class Name:<input type="text" id="tbxClassName" onclick="tbxClick('tbxClassName','displayClassName');" onkeyup="tbxKeyUp('tbxClassName','displayClassName');" onblur="tbxInputCheck('tbxClassName','displayClassName');" required>&nbsp<dfn id="displayClassName"></dfn><br><br>
-	Version 01-->
+	<!-- Version 01 	
+		Name:<input type="text" id="tbxName" onclick="tbxClick('tbxName','displayName');" oninput="tbxInput('tbxName','displayName');" required>&nbsp<dfn id="displayName"></dfn><br><br>
+		Student ID:<input type="text" id="tbxSid" onclick="tbxClick('tbxSid','displaySid');" oninput="tbxInput('tbxSid','displaySid');"  required>&nbsp<dfn id="displaySid"></dfn><br><br>
+		Instructor:<input type="text" id="tbxInstructor" onclick="tbxClick('tbxInstructor','displayInstructor');" oninput="tbxInput('tbxInstructor','displayInstructor');" required>&nbsp<dfn id="displayInstructor"></dfn><br><br>
+		Class Name:<input type="text" id="tbxClassName" onclick="tbxClick('tbxClassName','displayClassName');" oninput="tbxInput('tbxClassName','displayClassName');" required>&nbsp<dfn id="displayClassName"></dfn><br><br>
+Version 01-->
 	
-	<!-- Version 02  -->
-		Name:<input type="text" class="tbx" id="tbxName" required>&nbsp<dfn id="displayName"></dfn><br><br>
+	<!-- Version 02 Version 02  -->	
+		Name:<input type="text" class="tbx" id="tbxName" value="" required>&nbsp<dfn id="displayName"></dfn><br><br>
 		Student ID:<input type="text" class="tbx" id="tbxSid" required>&nbsp<dfn id="displaySid"></dfn><br><br>
 		Instructor:<input type="text" class="tbx" id="tbxInstructor" required>&nbsp<dfn id="displayInstructor"></dfn><br><br>
 		Class Name:<input type="text" class="tbx" id="tbxClassName" required>&nbsp<dfn id="displayClassName"></dfn><br><br>
-	<!-- Version 02  -->	
+
 		
 		<input type="submit" value="submit" >
 	</form>
 </body>
 <script>
-/* Version 01
-	function tbxClick(tbxId,displayId){
-		//alert("Hi");
-		var numTextLength = document.getElementById(tbxId).value.length;
-		if (numTextLength < 1){
-			document.getElementById(tbxId).style.backgroundColor = "red";
-			document.getElementById(displayId).innerHTML = "Required field";
-		}	
-	}
-	function tbxKeyUp(tbxId,displayId){
-		var numTextLength = document.getElementById(tbxId).value.length;
-		//alert(numTextLength);
-		if (numTextLength >= 1){
-			document.getElementById(tbxId).style.backgroundColor = "white";
-			document.getElementById(displayId).innerHTML = "";
+	(function(){
+	/* Version 01 
+		function tbxClick(tbxId,displayId){
+			//alert("Hi");
+			var numTextLength = document.getElementById(tbxId).value.length;
+			if (numTextLength < 1){
+				document.getElementById(tbxId).style.backgroundColor = "red";
+				document.getElementById(displayId).innerHTML = "Required field";
+			}	
 		}
-	}
-	function tbxInputCheck(tbxId,displayId){
-		var numTextLength = document.getElementById(tbxId).value.length;
-		if (numTextLength < 3){
-			document.getElementById(displayId).innerHTML = "Response too short,at least 3 characters";			
-		}else
-		{
-			document.getElementById(displayId).innerHTML = "";	
+		function tbxInput(tbxId,displayId){
+			var numTextLength = document.getElementById(tbxId).value.length;
+			//alert(numTextLength);
+			if (numTextLength >= 1){
+				document.getElementById(tbxId).style.backgroundColor = "white";
+				if (numTextLength < 3){
+					document.getElementById(displayId).innerHTML = "Response too short,at least 3 characters";
+				}else{				
+					document.getElementById(displayId).innerHTML = "";
+				}
+			}
 		}
-	}
-Version 01 */	
+	Version 01 */	
 
-/* Version 02 */
-	document.getElementsByClassName("tbx").addEventListener("click", function(e){
-		alert("Hello");
-	})
-	
+	/* Version 02 Version 02 */	
+		var objTbxs = document.getElementsByClassName("tbx");
+		var numTextLength;
+		var objTbx
+		for (var i = 0; i < objTbxs.length; i++){
+			objTbx = objTbxs[i];
+			objTbx.addEventListener("click", function(){
+				numTextLength = this.value.length;
+				if (numTextLength < 1){
+					this.style.backgroundColor = "red";
+					this.nextSibling.nextSibling.innerHTML = "Required field";
+				}	
+			})
+			
+			objTbx.addEventListener("input", function(){
+				numTextLength = this.value.length;
+				if (numTextLength >= 1){
+					this.style.backgroundColor = "white";
+					if (numTextLength < 3){
+						this.nextSibling.nextSibling.innerHTML = "Response too short,at least 3 characters";
+					}else{
+						this.nextSibling.nextSibling.innerHTML = "";					
+					}
+				}	
+			})
+		}
+	})()
 </script>
 </html>
