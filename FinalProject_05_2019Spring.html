@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<htmllang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="Author" content="Jinsheng Wang">
+		<meta name="Keywords" content="game,number,puzzle,Canvas">
+		<meta name="Description" content="">
+		<title>Final Project</title>
+		<style>
+			body{
+				text-align:center;
+			}
+			canvas{
+				display:inline;
+			//	margin:0 auto;
+			}
+			#divAmount{
+				display:inline;
+			//	background-color:yellow;
+			//	font:30px Helvetica;
+			//	margin:0 auto;
+			}
+			#divAmount,#msg,select, button {
+				font:30px green Helvetica ;
+			}
+			#msg{
+				color:green;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="divAmount">
+			<br>
+			Please select, rows:
+			<select id="numRows">
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+				<option value="6">6</option>
+				<option value="7">7</option>
+				<option value="8">8</option>
+				<option value="9">9</option>	
+				<option value="10">10</option>
+			</select>
+			columns:
+			<select id="numCols">
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+				<option value="6">6</option>
+				<option value="7">7</option>
+				<option value="8">8</option>
+				<option value="9">9</option>
+				<option value="10">10</option>
+			</select>
+			<button id="btnBegin">Begin</button>
+		</div>
+		<br><br>
+		
+		<canvas id="numberPuzzle" ></canvas>
+
+		<br>
+		
+		<div id="msg">
+		
+		</div>
+		
+		<script>
+			window.onload = function() {
+				var numPuzzleRows;// = 4;  // the total rows of the number puzzle rectangle, at least 2 rows
+				var numPuzzleCols;// = 5;  // the total columns of the number puzzle rectangle, at least 3 columns
+				var numTileWidth = 60;    //width of one tile
+				var numTileHeight = 60;   //height of one tile
+				var numTextHeight = numTileHeight/1.6;    //height of the text on current tile
+				var cvsPuzzle = document.getElementById('numberPuzzle');
+				var ctx = cvsPuzzle.getContext('2d');
+				
+				var objPuzzle = {};  // game object
+				var frames, time;
+				var I1=0;// identify the coordinates of mouse's point
+				var I=0;
+				var J1=0;
+				var J=0;
+				var fillC=false;// change color or not
+
+				// define a new game use new rows and columns
+				function newGame(){
+					numPuzzleRows = parseInt(document.getElementById("numRows").value);
+					numPuzzleCols = parseInt(document.getElementById("numCols").value);
+					cvsPuzzle.width = numTileWidth * numPuzzleCols;
+					cvsPuzzle.height = numTileHeight * (numPuzzleRows + 1);
+					ctx.font = numTextHeight + 'px Helvetica';
+
+					var arrTilesTemp = new Array();
+					var arrRightTileSequenceTemp = new Array();
+					for (var i = 0; i < numPuzzleRows; i++){
+						arrTilesTemp[i] = new Array();
+						arrRightTileSequenceTemp[i] = new Array();
+						for (var j = 0; j < numPuzzleCols; j++){
+							arrTilesTemp[i][j] = i * numPuzzleCols + j;
+							arrRightTileSequenceTemp[i][j] = i * numPuzzleCols + j + 1;
+						};
+					};
+					arrRightTileSequenceTemp[numPuzzleRows - 1][numPuzzleCols - 1]= 0;
+					
+					// puzzle object
+					objPuzzle = {
+
+						tiles: arrTilesTemp,
+						rightTileSequence: arrRightTileSequenceTemp,
+				
+						// draw the puzzle body
+						draw: function() {
+							ctx.strokeStyle = "#FFF";   //set color for tiles' border
+							var numTileNumber;      //fefers to current tile, which value is a number
+							var numTextWidth;	   //width of the text on current tile
+							var numCoordinateX;      //he x coordinate where to start painting the text
+							var numCoordinateY;      //he y coordinate where to start painting the text
+											
+//						alert(numTextHeight);
+//						alert(ctx.font);
+							
+							for (var i = 0; i < this.tiles.length; i++) {
+								for (var j = 0; j < this.tiles[i].length; j++) {
+									numTileNumber = this.tiles[i][j];
+									if(numTileNumber!= 0){
+										numTextWidth = ctx.measureText(numTileNumber).width;
+										numCoordinateX = j * numTileWidth + (numTileWidth - numTextWidth)/2;
+										numCoordinateY = i * numTileHeight + numTileHeight - numTextHeight/2;  //?
+										var fillStyle;
+										numTileNumber== this.rightTileSequence[i][j] ? fillStyle = "#0F0": fillStyle = "blue";
+										ctx.fillStyle = fillStyle;
+										ctx.fillText(numTileNumber, numCoordinateX, numCoordinateY);
+										ctx.beginPath();
+										ctx.rect( j * numTileWidth, i * numTileHeight, numTileWidth, numTileHeight);
+										ctx.stroke();
+									}
+
+								}	
+							}
+						},					
+				
+						// shuffle an two dimensions array
+						randomize: function() {
+							var aux = [];
+							for (var i = 0; i < this.tiles.length; i++) {
+								for (var j = 0; j < this.tiles[0].length; j++) {
+									aux.push(this.tiles[i][j]);
+								}
+							}
+							aux = shuffle(aux);
+							for (var i = 0; i < this.tiles.length; i++) {
+								for (var j = 0; j < this.tiles[0].length; j++) {
+									this.tiles[i][j] = aux[j + i * numPuzzleCols];     //
+								}
+							}
+						}
+					}
+				}
+				
+				// Start the game
+				function init() {
+					objPuzzle.randomize();
+					frames = 0, time = 0;
+					document.getElementById("msg").innerHTML="";
+					run();
+				}
+
+				function run() {
+					frames++;
+					update();
+					draw();
+					if(end()){
+						document.getElementById("msg").innerHTML="You did it!!!";
+					}else{
+						window.requestAnimationFrame(run, cvsPuzzle);
+					}
+				}
+
+				// Update the puzzle body
+				function update() {
+
+					if(frames % 60 === 0) {
+						if(time < 999){
+							time++;
+						}
+					}
+
+//					setInterval(function(){if(time < 999) time++;},1000);
+
+					if(inx(I,J)&&objPuzzle.tiles[I][J]!=0){
+						for (var k = 0; k < numPuzzleCols; k++){
+							if (objPuzzle.tiles[I][k]==0){
+								if( J < k ){
+									for (var l = k; l > J; l--){
+										swap(I,l-1,I,l);
+									}
+								}else{
+									for (var l = k; l < J; l++){
+										swap(I,l,I,l+1);
+									}
+								}
+							}
+						
+						}
+						
+						for (var m = 0; m < numPuzzleRows; m++){
+							if (objPuzzle.tiles[m][J]==0){
+								if( I < m ){
+									for (var l = m; l > I; l--){
+										swap(l,J,l-1,J);
+									}
+								}else{
+									for (var l = m; l < I; l++){
+										swap(l,J,l+1,J);
+									}
+								}
+							}
+						
+						}						
+
+					}					
+				}
+
+				// redraw all game
+				function draw() {
+					drawBackground();
+					objPuzzle.draw();
+				}
+				
+				// draw background
+				function drawBackground() {
+					ctx.fillStyle = "#000";  //set background color
+					ctx.fillRect(0, 0, numTileWidth * numPuzzleCols, numTileHeight * numPuzzleRows);
+					ctx.fillStyle = "#AAA";
+					ctx.fillRect(0, numTileHeight * numPuzzleRows, numTileWidth * numPuzzleCols, numTileHeight);
+					drawRestart();
+					drawTime();
+				}
+
+				// draw restart button
+				function drawRestart() { 
+					var strText;
+					var numTimeWidthRate;  // the times number of the time-display rectangle to a tile
+					numPuzzleCols < 4 ? numTimeWidthRate = 1.5 : numTimeWidthRate = 2;
+					numPuzzleCols > 4 ? strText = "RESTART":strText = "GO";	
+					var numTextWidth = ctx.measureText(strText).width;
+					var numCoordinateX = (numTileWidth * (numPuzzleCols - numTimeWidthRate) - numTextWidth)/2;
+					var numCoordinateY = numTileHeight * (numPuzzleRows + 1) - numTextHeight/2;		
+					ctx.strokeStyle ="#FFF";
+					ctx.beginPath();
+					ctx.rect(0, numTileHeight * numPuzzleRows, numTileWidth * (numPuzzleCols - numTimeWidthRate), numTileHeight);
+					ctx.stroke();
+					ctx.fillStyle =fillC? "#FF0":"#FFF";
+					ctx.fillText(strText, numCoordinateX, numCoordinateY);
+				}
+
+				// draw the time
+				function drawTime() {
+					var numTextWidth = ctx.measureText(time).width;
+					var numTimeWidthRate;  // the times number of the time-display rectangle to a tile
+					numPuzzleCols < 4 ? numTimeWidthRate = 1.5 : numTimeWidthRate = 2;
+					var numCoordinateX = numTileWidth * (numPuzzleCols - numTimeWidthRate) + (numTileWidth * numTimeWidthRate - numTextWidth)/2;
+					var numCoordinateY = numTileHeight * (numPuzzleRows + 1) - (numTextHeight/2);
+					
+					ctx.strokeStyle = "#FFF";
+					ctx.beginPath();
+					ctx.rect(numTileWidth * (numPuzzleCols - numTimeWidthRate), numTileHeight * numPuzzleRows, numTileWidth * numTimeWidthRate, numTileHeight);
+					ctx.stroke();
+
+					ctx.fillStyle = "#000";
+					ctx.fillText(time, numCoordinateX, numCoordinateY);	
+				}
+				
+				// shuffle an array
+				function shuffle(array) {
+					array.sort(function(){ return 0.5 - Math.random() })
+					return array;
+				}
+								
+
+				// mouse click event
+				cvsPuzzle.onclick = function(e) {
+					var e = window.event || e;
+					var rect = this.getBoundingClientRect();
+					var mouseX =e.clientX - rect.left;   // get mouse point's coordinates on canvsa
+					var mouseY =e.clientY - rect.top; 
+					J=Math.floor(mouseX/numTileWidth);
+					I=Math.floor(mouseY/numTileHeight);
+					if(I == numPuzzleRows & J < numPuzzleCols - 2 ) init();
+				}
+				
+/*				
+				// mouse move event
+				cvsPuzzle.onmousemove = function(e){
+					var e = window.event || e;//
+					var rect = this.getBoundingClientRect();
+					var mouseX =e.clientX - rect.left;    // get mouse point's coordinates on canvsa
+					var mouseY =e.clientY - rect.top; 
+					J1=Math.floor(mouseX/numTileWidth);
+					I1=Math.floor(mouseY/numTileHeight);
+
+					if(I1==4&J1<3) fillC=true; // change the restart button's color
+					else fillC=false;
+
+				}
+				
+				// mouse move, change text's color
+				cvsPuzzle.onmouseout = function(){
+					fillC=false;
+				}
+*/
+
+				// exchange two elements' value in an array
+				function swap(a,b,x,y){
+					var temp=objPuzzle.tiles[a][b];
+					objPuzzle.tiles[a][b]=objPuzzle.tiles[x][y];
+					objPuzzle.tiles[x][y]=temp;
+				}
+
+				// check if out of range
+				function inx(x,y){
+					if(0 <= x && x < numPuzzleRows && 0 <= y && y < numPuzzleCols ) return true;
+					return false;
+				}
+
+				// check if complish the game
+				function end(){
+					for(var m=0;m<objPuzzle.tiles.length;m++){
+						for(var n=0;n<objPuzzle.tiles[0].length;n++){
+							if(objPuzzle.tiles[m][n]!=objPuzzle.rightTileSequence[m][n]) return false;
+						}
+					}
+					return true;
+				}
+				
+				
+				newGame();
+				
+				init();
+				
+				document.getElementById("btnBegin").onclick = function(){
+					
+					newGame();
+					init();
+				}
+			
+			}
+		</script>
+		
+	
+	</body>
+
+</html>
