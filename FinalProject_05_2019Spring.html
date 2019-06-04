@@ -146,10 +146,15 @@
 							var aux = [];
 							for (var i = 0; i < this.tiles.length; i++) {
 								for (var j = 0; j < this.tiles[0].length; j++) {
-									aux.push(this.tiles[i][j]);
+									var ii = this.tiles[i][j];
+									ii++;
+									if(ii>8) ii = 0;
+									if(ii==7) ii = 8;
+									else if(ii==8) ii = 7;
+									aux.push(ii);
 								}
 							}
-							aux = shuffle(aux);
+							//aux = shuffle(aux);
 							for (var i = 0; i < this.tiles.length; i++) {
 								for (var j = 0; j < this.tiles[0].length; j++) {
 									this.tiles[i][j] = aux[j + i * numPuzzleCols];     //
